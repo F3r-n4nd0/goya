@@ -23,11 +23,7 @@ pipeline {
             steps {
                 sh "rm -rf *.tar"
                 // create a docker image
-                sh "docker build -t fernando/goya - << EOF
-                    FROM nginx
-                    COPY ./resources /usr/share/nginx/html
-                    EXPOSE 80
-                    EOF"
+                sh "docker build -t fernando/goya - << FROM nginx COPY ./resources /usr/share/nginx/html EXPOSE 80"
                 // export the image to a TAR file
                 sh "docker save -o fernando_goya.tar fernando/goya"
                 archiveArtifacts artifacts: '**/*tar'
