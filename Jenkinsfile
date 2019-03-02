@@ -1,5 +1,5 @@
 pipeline {
-    agent none
+    agent none    
     stages {
         stage("Preparation") {
             agent any
@@ -23,11 +23,21 @@ pipeline {
             steps {
                 sh "rm -rf *.tar"
                 // create a docker image
-                sh "docker build -t fernando/goya - << 'FROM nginx COPY ./resources /usr/share/nginx/html EXPOSE 80'"
-                // export the image to a TAR file
-                sh "docker save -o fernando_goya.tar fernando/goya"
+                sh "tar -C ./resources/ -cf fernando_goya.tar ."
                 archiveArtifacts artifacts: '**/*tar'
                 sh "echo 'Completed packaging'"
+            }
+        }
+        stage("Installation approval") {
+            agent any
+            steps {
+                input "Should we deploy this pipeline to production?"
+            }
+        }
+        stage("Install") {
+            agent any
+            steps {
+                sh "echo 'Completed installation'"  
             }
         }
     }
