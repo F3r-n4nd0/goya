@@ -23,6 +23,16 @@ pipeline {
         stage("Package") {
             agent any
             steps {
+                sh "rm -rf *.tar"
+                // create a docker image
+                sh "docker build -t fernando/goya - << EOF
+                    FROM nginx
+                    COPY ./resources /usr/share/nginx/html
+                    EXPOSE 80
+                    EOF"
+                // export the image to a TAR file
+                sh "docker save -o fernando_goya.tar fernando/goya"
+                archiveArtifacts artifacts: '**/*tar'
                 sh "echo 'Completed packaging'"
             }
         }
